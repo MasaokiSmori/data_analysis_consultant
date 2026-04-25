@@ -1,0 +1,442 @@
+{
+  "meta": {
+    "project_id": "project_acme_growth_001",
+    "generated_at": "2026-04-25T10:30:00+09:00",
+    "api_version": "0.1.0",
+    "policy_version": "approval_policy_v3",
+    "notes": [
+      "Frontend projection mock aligned to backend_spec.md and frontend_spec.md",
+      "Includes normal path, provisional mode, justified override, mandatory advisor consult, and masked access examples"
+    ]
+  },
+  "projects": {
+    "list": [
+      {
+        "project_id": "project_acme_growth_001",
+        "title": "ACME Growth Diagnostic",
+        "client_name": "ACME Corp",
+        "current_phase": "validation_and_qa",
+        "current_status": "active",
+        "pending_reviews_count": 1,
+        "overall_progress": 0.68,
+        "latest_deliverable_summary": "Retention analysis draft is ready for QA-backed insight synthesis.",
+        "updated_at": "2026-04-25T10:20:00+09:00"
+      }
+    ],
+    "summary": {
+      "project_id": "project_acme_growth_001",
+      "title": "ACME Growth Diagnostic",
+      "current_phase": "validation_and_qa",
+      "phase_label": "Validation and QA",
+      "current_status": "active",
+      "overall_progress": 0.68,
+      "pending_reviews_count": 1,
+      "active_tasks_count": 3,
+      "blocked_tasks_count": 1,
+      "awaiting_plan_approval_count": 1,
+      "phase_summary": "Data quality review has passed. Analytical consistency review is in progress for retention outputs.",
+      "latest_deliverable_summary": "Interim retention findings are available, but final recommendation is blocked on QA gates.",
+      "warnings": [
+        "One provisional artifact exists and cannot be used for final delivery.",
+        "One plan approval is awaiting routed decision."
+      ],
+      "updated_at": "2026-04-25T10:20:00+09:00"
+    }
+  },
+  "workspace": {
+    "status": {
+      "project_id": "project_acme_growth_001",
+      "current_phase": "validation_and_qa",
+      "phase_summary": "QA is reviewing whether the retention decline segmentation aligns with the agreed metric definition.",
+      "project_snapshot": {
+        "completed_tasks": 9,
+        "active_tasks": 3,
+        "blocked_tasks": 1,
+        "open_questions": 2,
+        "pending_user_reviews": 1
+      },
+      "active_task_summary": [
+        {
+          "task_id": "task_052",
+          "title": "Retention cohort analysis",
+          "assigned_agent": "python_specialist",
+          "status": "completed",
+          "risk_level": "medium",
+          "blocking_reason": null
+        },
+        {
+          "task_id": "task_061",
+          "title": "Analytical consistency review for retention outputs",
+          "assigned_agent": "data_validation_qa_specialist",
+          "status": "running",
+          "risk_level": "medium",
+          "blocking_reason": null
+        },
+        {
+          "task_id": "task_064",
+          "title": "Clarify staff-account exclusion assumption",
+          "assigned_agent": "metric_definition_specialist",
+          "status": "blocked",
+          "risk_level": "high",
+          "blocking_reason": "Awaiting user clarification"
+        }
+      ],
+      "pending_review_summary": {
+        "review_id": "review_011",
+        "title": "Confirm exclusion of internal staff accounts",
+        "blocking_scope": "phase",
+        "artifact_ids": ["artifact_metric_021"],
+        "allowed_actions": ["approve", "request_changes", "clarify", "pause"]
+      }
+    },
+    "conversation": {
+      "messages": [
+        {
+          "message_id": "msg_001",
+          "role": "user",
+          "created_at": "2026-04-24T15:10:00+09:00",
+          "content": "最近のリテンション悪化要因を知りたいです。"
+        },
+        {
+          "message_id": "msg_024",
+          "role": "system",
+          "created_at": "2026-04-25T09:48:00+09:00",
+          "content": "A metric definition review is waiting for your confirmation before the phase can proceed.",
+          "related_review_id": "review_011",
+          "related_artifact_ids": ["artifact_metric_021"]
+        },
+        {
+          "message_id": "msg_025",
+          "role": "system",
+          "created_at": "2026-04-25T10:02:00+09:00",
+          "content": "An execution plan was approved via delegated approval. No override was used.",
+          "related_decision_id": "decision_033"
+        },
+        {
+          "message_id": "msg_026",
+          "role": "system",
+          "created_at": "2026-04-25T10:14:00+09:00",
+          "content": "A provisional exploratory artifact was created under degraded mode and is not eligible for final delivery.",
+          "related_artifact_ids": ["artifact_insight_099"]
+        }
+      ]
+    }
+  },
+  "reviews": {
+    "pending": [
+      {
+        "review_id": "review_011",
+        "phase": "scoping_and_metric_definition",
+        "title": "Confirm exclusion of internal staff accounts",
+        "artifact_ids": ["artifact_metric_021"],
+        "prompt_to_user": "Please confirm whether internal staff accounts should be excluded from the active user definition.",
+        "allowed_actions": ["approve", "request_changes", "clarify", "pause"],
+        "blocking_scope": "phase",
+        "impact_summary": "Without this clarification, downstream analytical consistency review cannot finalize.",
+        "status": "pending",
+        "deadline": null,
+        "created_at": "2026-04-25T09:45:00+09:00"
+      }
+    ],
+    "response_example": {
+      "review_id": "review_011",
+      "action": "request_changes",
+      "comments": "Please exclude internal staff accounts and contractor test accounts.",
+      "requested_changes": [
+        "Exclude internal staff accounts",
+        "Exclude contractor test accounts"
+      ],
+      "approved_scope": []
+    }
+  },
+  "artifacts": {
+    "list": [
+      {
+        "artifact_id": "artifact_metric_021",
+        "artifact_type": "metric_definition_sheet",
+        "title": "Active user and retention metric definition v2",
+        "phase": "scoping_and_metric_definition",
+        "summary": "Updated metric definitions including proposed exclusion logic for internal users.",
+        "qa_status": "approved",
+        "quality_stage": "user-reviewed",
+        "visibility": "user_review",
+        "provisional": false,
+        "risk_level": "medium",
+        "producer": "metric_definition_specialist",
+        "updated_at": "2026-04-25T09:42:00+09:00"
+      },
+      {
+        "artifact_id": "artifact_py_052",
+        "artifact_type": "analysis_memo",
+        "title": "Retention cohort analysis",
+        "phase": "analytical_execution",
+        "summary": "Cohort analysis suggests retention decline is concentrated in first-month activation drop-off.",
+        "qa_status": "in_review",
+        "quality_stage": "internal",
+        "visibility": "internal",
+        "provisional": false,
+        "risk_level": "medium",
+        "producer": "python_specialist",
+        "updated_at": "2026-04-25T09:58:00+09:00"
+      },
+      {
+        "artifact_id": "artifact_insight_099",
+        "artifact_type": "insight_memo",
+        "title": "Provisional insight memo",
+        "phase": "insight_and_recommendation",
+        "summary": "Preliminary interpretation generated under provisional mode pending final metric clarification.",
+        "qa_status": "unreviewed",
+        "quality_stage": "draft",
+        "visibility": "internal",
+        "provisional": true,
+        "risk_level": "high",
+        "producer": "insight_specialist",
+        "updated_at": "2026-04-25T10:12:00+09:00"
+      },
+      {
+        "artifact_id": "artifact_report_201",
+        "artifact_type": "final_report",
+        "title": "Executive summary deck",
+        "phase": "delivery_and_iteration",
+        "summary": "Final recommendation deck for ACME growth diagnostic.",
+        "qa_status": "approved",
+        "quality_stage": "final-delivery",
+        "visibility": "final_delivery",
+        "provisional": false,
+        "risk_level": "medium",
+        "producer": "business_recommendation_reporting_specialist",
+        "updated_at": "2026-04-25T10:18:00+09:00"
+      }
+    ],
+    "detail_examples": {
+      "normal_artifact": {
+        "artifact_id": "artifact_py_052",
+        "artifact_type": "analysis_memo",
+        "title": "Retention cohort analysis",
+        "phase": "analytical_execution",
+        "summary": "Cohort analysis suggests retention decline is concentrated in first-month activation drop-off.",
+        "body_renderer": "document",
+        "body": {
+          "sections": [
+            {
+              "heading": "Key finding",
+              "content": "Month-1 retention fell from 41.2% to 33.8% for newly activated SMB accounts."
+            },
+            {
+              "heading": "Evidence",
+              "content": "Based on cohort table segmented by acquisition month and account size."
+            }
+          ]
+        },
+        "provenance": {
+          "producer": "python_specialist",
+          "supporting_artifact_ids": ["artifact_sql_034", "artifact_metric_021"],
+          "qa_reviews": [
+            {
+              "qa_review_id": "qa_021",
+              "review_stage": "data_quality_review",
+              "stage_status": "approved"
+            },
+            {
+              "qa_review_id": "qa_022",
+              "review_stage": "analytical_consistency_review",
+              "stage_status": "running"
+            }
+          ]
+        },
+        "access_summary": {
+          "allowed": true,
+          "masked_fields": [],
+          "access_notice": null
+        }
+      },
+      "masked_artifact": {
+        "artifact_id": "artifact_sql_034",
+        "artifact_type": "dataset",
+        "title": "Orders by customer segment",
+        "phase": "data_understanding",
+        "summary": "Aggregated order and activation metrics by customer segment.",
+        "body_renderer": "table_preview",
+        "body": {
+          "columns": ["segment", "orders", "activation_rate", "sensitive_column"],
+          "rows_preview": [
+            ["SMB", 12450, 0.338, "[MASKED]"],
+            ["Mid-market", 3120, 0.412, "[MASKED]"]
+          ]
+        },
+        "access_summary": {
+          "allowed": true,
+          "masked_fields": ["sensitive_column"],
+          "access_notice": "Some fields are masked due to access scope restrictions."
+        }
+      }
+    }
+  },
+  "governance": {
+    "risk_and_readiness": [
+      {
+        "task_id": "task_060",
+        "execution_plan_artifact_id": "artifact_plan_060",
+        "risk_level": "low",
+        "readiness_decision": "delegated_approval_allowed",
+        "policy_version": "approval_policy_v3",
+        "decision_actor": "delegated_approval_component",
+        "decision_basis": "policy_match",
+        "override_level": "",
+        "override_reason_type": "",
+        "advisor_consulted": false
+      },
+      {
+        "task_id": "task_066",
+        "execution_plan_artifact_id": "artifact_plan_066",
+        "risk_level": "high",
+        "readiness_decision": "requires_supervisor",
+        "policy_version": "approval_policy_v3",
+        "decision_actor": "supervisor",
+        "decision_basis": "justified_override",
+        "override_level": "temporary_override",
+        "override_reason_type": "human_instruction_priority",
+        "advisor_consulted": true
+      }
+    ],
+    "override_example": {
+      "decision_id": "decision_041",
+      "task_id": "task_066",
+      "decision_actor": "supervisor",
+      "decision_basis": "justified_override",
+      "policy_version": "approval_policy_v3",
+      "override": {
+        "override_target": "execution_readiness_policy",
+        "override_level": "temporary_override",
+        "override_reason_type": "human_instruction_priority",
+        "override_rationale": "The user explicitly requested a provisional exploratory cut before full metric lock.",
+        "expected_risk_if_not_overridden": "Project would block before directional validation.",
+        "expected_risk_if_overridden": "Output may contain assumptions that require later QA confirmation.",
+        "mitigation_plan": [
+          "mark output as provisional",
+          "mandatory analytical_consistency_review before any user-facing recommendation"
+        ],
+        "override_scope": "task"
+      }
+    },
+    "advisor_consult_example": {
+      "advisor_note_id": "advisor_014",
+      "related_decision_id": "decision_041",
+      "consult_trigger": "high-risk task",
+      "summary": "Proceed only if the exploratory output is explicitly labeled provisional and excluded from final recommendation flow.",
+      "risks": [
+        "Metric interpretation may shift after clarification",
+        "Users may over-trust interim narrative"
+      ],
+      "alternatives": [
+        "Pause until metric clarification is approved",
+        "Produce a narrower descriptive artifact without interpretation"
+      ],
+      "recommended_path": "Allow temporary override with mandatory downstream QA and visible provisional labeling."
+    }
+  },
+  "timeline": {
+    "events": [
+      {
+        "event_id": "evt_201",
+        "event_type": "plan_approved",
+        "occurred_at": "2026-04-25T10:02:00+09:00",
+        "title": "Delegated approval granted for task_060",
+        "summary": "Low-risk read-only SQL aggregation matched approval policy.",
+        "related_ids": {
+          "task_id": "task_060",
+          "decision_id": "decision_033",
+          "artifact_ids": ["artifact_plan_060"]
+        }
+      },
+      {
+        "event_id": "evt_202",
+        "event_type": "advisor_consulted",
+        "occurred_at": "2026-04-25T10:10:00+09:00",
+        "title": "Mandatory advisor consult completed",
+        "summary": "Advisor reviewed a high-risk temporary override request.",
+        "related_ids": {
+          "decision_id": "decision_041",
+          "advisor_note_id": "advisor_014"
+        }
+      },
+      {
+        "event_id": "evt_203",
+        "event_type": "override_recorded",
+        "occurred_at": "2026-04-25T10:11:00+09:00",
+        "title": "Justified override recorded",
+        "summary": "Temporary override accepted with mandatory downstream QA.",
+        "related_ids": {
+          "decision_id": "decision_041",
+          "task_id": "task_066"
+        }
+      },
+      {
+        "event_id": "evt_204",
+        "event_type": "provisional_mode_recorded",
+        "occurred_at": "2026-04-25T10:12:00+09:00",
+        "title": "Provisional mode enabled",
+        "summary": "Exploratory output created under degraded mode pending metric clarification.",
+        "related_ids": {
+          "artifact_ids": ["artifact_insight_099"],
+          "task_id": "task_066"
+        }
+      },
+      {
+        "event_id": "evt_205",
+        "event_type": "review_requested",
+        "occurred_at": "2026-04-25T09:45:00+09:00",
+        "title": "Metric definition review requested",
+        "summary": "User input is required to finalize exclusion logic.",
+        "related_ids": {
+          "review_id": "review_011",
+          "artifact_ids": ["artifact_metric_021"]
+        }
+      }
+    ]
+  },
+  "deliverables": {
+    "final_outputs": [
+      {
+        "output_id": "output_201",
+        "title": "Executive summary deck",
+        "summary": "Final ACME growth diagnostic report with evidence-backed recommendations.",
+        "artifact_ids": ["artifact_report_201"],
+        "signed_off": false,
+        "delivered_to_user": false
+      }
+    ],
+    "provisional_outputs": [
+      {
+        "artifact_id": "artifact_insight_099",
+        "title": "Provisional insight memo",
+        "summary": "Interim exploratory interpretation. Not eligible for final delivery.",
+        "provisional": true,
+        "quality_stage": "draft"
+      }
+    ]
+  },
+  "notifications": [
+    {
+      "notification_id": "notif_001",
+      "level": "high",
+      "type": "review_requested",
+      "title": "User review required",
+      "message": "Confirm the active user exclusion rule before the phase can proceed."
+    },
+    {
+      "notification_id": "notif_002",
+      "level": "warning",
+      "type": "override_recorded",
+      "title": "Justified override recorded",
+      "message": "A temporary override was accepted for a high-risk task. Downstream QA is mandatory."
+    },
+    {
+      "notification_id": "notif_003",
+      "level": "warning",
+      "type": "provisional_mode_recorded",
+      "title": "Provisional artifact created",
+      "message": "One artifact is provisional and cannot be used for final delivery."
+    }
+  ]
+}
