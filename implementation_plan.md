@@ -65,6 +65,7 @@ Workspace Bootstrap (ディレクトリ・ドキュメント整備) は完了済
 - Python / TypeScript / DB / CI の最小可動セットアップ
 - "hello" レベルの API + frontend が通信できる状態に到達
 - codegen pipeline が drift 検知できる状態
+- repo 共通慣行を coding agent が再発明しない状態にする
 
 ### 6.3 含まないもの
 
@@ -77,6 +78,7 @@ Workspace Bootstrap (ディレクトリ・ドキュメント整備) は完了済
 
 | ID | Task | Files | Deps | Size |
 |---|---|---|---|---|
+| T0.0 | Repo foundation files (`.gitignore`, `.gitattributes`, `.editorconfig`, `LICENSE`, `Makefile`, `.env.example`) | top-level files | — | S |
 | T0.1 | Backend project skeleton (uv + pyproject + ruff + mypy + pytest) | `backend/pyproject.toml`, `backend/.python-version`, `backend/ruff.toml`, `backend/mypy.ini`, `backend/conftest.py` | — | M |
 | T0.2 | Frontend project skeleton (pnpm + Next.js 15 + shadcn/ui + biome + Vitest) | `frontend/package.json`, `frontend/next.config.ts`, `frontend/tsconfig.json`, `frontend/biome.json` | — | M |
 | T0.3 | Local dev infra (docker-compose + Postgres+pgvector) | `docker-compose.yml`, `.env.example`, `Makefile` | — | S |
@@ -136,6 +138,7 @@ Workspace Bootstrap (ディレクトリ・ドキュメント整備) は完了済
 | T1.10 | API request/response schema (per `frontend_spec.md §11`) | `backend/schemas/api.py` | T1.1, T1.4 | M | `frontend_spec.md §11` |
 | T1.11 | SSE event schema (discriminated union) | `backend/schemas/events.py` | T1.1 | M | `frontend_spec.md §12.2.1` |
 | T1.12 | Mock alignment test (`frontend_api_mock.json` ↔ schema) | `backend/tests/unit/schemas/test_mock_alignment.py` | T1.10 | S | — |
+| T1.13 | Sample engagement fixture skeleton | `backend/tests/fixtures/sample_engagement/` | T0.0 | S | — |
 
 ### 7.4 Notable tasks
 

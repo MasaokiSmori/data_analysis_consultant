@@ -1,0 +1,5 @@
+table_id,table_name,grain,owner,description
+tbl_users,users,user,analytics,User master table
+tbl_sessions,sessions,session,product,Session event summary
+tbl_orders,orders,order,finance,Order and purchase summary
+tbl_retention_weekly,retention_weekly,user_week,analytics,Weekly retention mart

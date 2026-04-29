@@ -32,6 +32,22 @@
 | 切替単位 | テナント単位設定 |
 | 切替決定タイミング | onboarding 時(`docs/customer/onboarding_checklist.md §4`) |
 
+### 1.2.1 Prompt Asset Format
+
+| 観点 | 採用 | 補足 |
+|---|---|---|
+| Prompt の物理形式 | Python module (`backend/prompts/*.py`) | version 管理、型補完、reuse を優先 |
+| Prompt 本文の持ち方 | 定数文字列 + 組み立て関数 | 小さな差分を関数化しやすい |
+| Prompt version | module 内定数で明示 | `PROMPT_VERSION = "x.y.z"` |
+| template engine | 不採用 (MVP) | Jinja での過剰抽象化を避ける |
+
+ベースルール:
+
+- prompt は `backend/prompts/` 配下の `.py` とする
+- specialist ごとに module を分ける
+- version は prompt module 側で明示し、`AgentInvocationRecord` に記録する
+- prompt を YAML / TOML / markdown へ分散しない
+
 ### 1.3 Frontend
 
 | 観点 | 採用 | 補足 |
@@ -161,3 +177,27 @@
 ## 6. 用語
 
 本書で使う技術用語は `backend_spec.md` Appendix: Canonical Terms を参照。
+
+## 7. Environment Variables
+
+Phase 0 の `.env.example` と実装時の env 命名は本節を正本とする。
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | backend の Postgres 接続 |
+| `ANTHROPIC_API_KEY` | Anthropic provider key |
+| `LANGFUSE_PUBLIC_KEY` | Langfuse public key |
+| `LANGFUSE_SECRET_KEY` | Langfuse secret key |
+| `LANGFUSE_HOST` | Langfuse host URL |
+| `SENTRY_DSN` | backend / frontend error tracking |
+| `E2B_API_KEY` | Python sandbox runtime |
+| `GCS_BUCKET_ARTIFACTS` | artifact store bucket |
+| `GCP_PROJECT_ID` | GCP project id |
+| `NEXTAUTH_SECRET` | Auth.js secret |
+| `NEXTAUTH_URL` | frontend base URL |
+| `TENANT_ID_DEFAULT` | local dev 用 default tenant |
+
+ルール:
+
+- 新規 env を導入する場合は `.env.example` と本節を同時更新する
+- customer-specific secret は README や task brief に直接書かない

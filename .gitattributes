@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+frontend/lib/contracts.ts linguist-generated=true
+frontend/lib/events.ts linguist-generated=true

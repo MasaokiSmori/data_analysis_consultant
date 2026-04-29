@@ -86,6 +86,50 @@ data_analysis_consultant/
 - graph からは `state_manager_refresh_node` などの利用 node を通じて呼ぶ
 - `query_state_view` も同じ service を叩く
 
+### 3.2.2 State Persistence Design
+
+実装初期の永続化方針は、Pydantic の入れ子構造をそのまま 1 行へ押し込むのではなく、主要ドメインごとに正規化し、再構成は service / repository 層で行う。
+
+基本方針:
+
+- `projects` 1 テーブル
+  project-level metadata、phase、tenant、top-level status
+- `tasks` 1 テーブル
+  `task_queue` / `active_tasks` / `completed_tasks` は別 collection ではなく `status` 列で表現する
+- `artifacts` 1 テーブル
+  metadata を保持し、本体は artifact store に置く
+- `decisions` 1 テーブル
+  `SupervisorDecision` と関連 advisor note 参照
+- `qa_reviews` 1 テーブル
+  stage-based QA の結果
+- `agent_invocations` 1 テーブル
+  invocation metadata、tool call 参照
+- `tool_calls` 1 テーブル
+  tool execution metadata
+
+JSONB を許容する領域:
+
+- `project_memory`
+- `decision_memory`
+- `working_memory`
+- `agent_episodic_memories`
+- summary cache
+
+原則:
+
+- append-heavy かつ bounded / projection-oriented な構造は JSONB を許容する
+- cross-record search / filter / join が必要なものは正規化する
+- `agent_episodic_memories` は初期実装では project 単位 JSONB で持ってよい
+- artifact body は DB に入れず object storage を正本とする
+- Pydantic schema と SQLAlchemy ORM は分離する
+- Alembic migration 命名は `0001_initial.py`, `0002_<topic>_<verb>.py` を採用する
+
+非採用:
+
+- SQLModel を source of truth にする設計
+- GraphState 全体を 1 JSON blob だけで持つ設計
+- queue ごとに task 専用テーブルを分ける設計
+
 ### 3.3 Policy Layer
 
 責務:

@@ -141,6 +141,30 @@ UI は大きく以下の 5 領域で構成する。
 - artifact を開く
 - phase timeline を確認
 
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Top Bar: Project name | phase badge | pending review count | user menu          |
++------------------------------+--------------------------------+------------------+
+| Left Nav                     | Main Workspace                 | Right Context    |
+| - Overview                   | - conversation OR artifact     | - current phase  |
+| - Conversation               | - inline review banners        | - working memory |
+| - Reviews                    | - selected artifact body       | - focus points   |
+| - Artifacts                  | - action footer / compose box  | - blocked items  |
+| - Timeline                   |                                | - access notice  |
+| - Deliverables               |                                |                  |
++------------------------------+--------------------------------+------------------+
+| Bottom Toast / Notification rail                                                 |
++----------------------------------------------------------------------------------+
+```
+
+原則:
+
+- 左で移動、中央で作業、右で文脈確認
+- pending review は中央にも右にも出す
+- provisional / risk / QA stage は artifact header で常時確認できる
+
 ### 7.2 Conversation Screen
 
 表示要素:
