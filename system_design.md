@@ -161,6 +161,27 @@ data_analysis_consultant/
 - `backend/services/artifacts.py`
 - `backend/services/governance.py`
 
+### 3.7 Human Review Trace Layer
+
+責務:
+
+- node / agent ごとの `Human Review Reasoning Trace` 出力
+- redact 済み reasoning summary の永続化
+- project / run / task / node 単位での trace 検索
+- GraphState や agent input への再注入禁止の担保
+
+配置例:
+
+- `backend/observability/reasoning_trace.py`
+- `backend/observability/redaction.py`
+
+原則:
+
+- trace は state 正本ではなく observability artifact として扱う
+- 保存形式は JSONL を推奨する
+- `supervisor_node`, `advisor_consult_node`, `phase_gate_node`, `user_review_gate_node`, `state_manager_refresh_node`, `error_triage_node` は必須出力対象
+- specialist worker は Plan-Execute 対象から優先的に対応する
+
 ## 4. Frontend Design
 
 ### 4.1 App Shell

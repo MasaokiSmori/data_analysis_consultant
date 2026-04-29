@@ -38,6 +38,7 @@
 - `classify_execution_risk` と `evaluate_execution_readiness` が policy version を返すか
 - override request に rationale / mitigation が必須になっているか
 - 根拠不十分な Supervisor 判断が policy を上書きできないか
+- required node の Human Review Reasoning Trace が出力され、state に混入していないか
 
 ### Milestone D. Execution MVP
 
@@ -61,6 +62,7 @@
 - tenant isolation が保たれているか
 - policy store version が decision と結び付くか
 - observability 指標が主要ボトルネックを捉えられるか
+- reasoning trace の redaction / retention / internal visibility が守られているか
 
 ## 4. Mandatory Red Flags
 
@@ -72,6 +74,7 @@
 - QA 未通過 artifact が user-facing recommendation の根拠になっている
 - agent identity を caller payload から自由入力させている
 - masked / inaccessible field を frontend で推測補完している
+- Human Review Reasoning Trace が agent input や GraphState 正本に再注入されている
 
 ## 5. Suggested Review Ritual
 
