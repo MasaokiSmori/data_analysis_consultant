@@ -26,6 +26,11 @@
 - [`docs/customer/onboarding_checklist.md`](docs/customer/onboarding_checklist.md) — テナント立ち上げ時の確認事項
 - [`docs/customer/sales_pitch.md`](docs/customer/sales_pitch.md) — 営業補助資料
 
+### FDE 運用
+- [`docs/fde/engagement_playbook.md`](docs/fde/engagement_playbook.md) — 客先導入時の進め方
+- [`docs/fde/client_clone_bootstrap.md`](docs/fde/client_clone_bootstrap.md) — clone 後の初回手順
+- [`docs/fde/first_agent_briefs.md`](docs/fde/first_agent_briefs.md) — 最初の agent 依頼テンプレ
+
 ## ディレクトリ構成
 
 | ディレクトリ | 役割 |
