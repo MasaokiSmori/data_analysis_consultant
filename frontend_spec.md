@@ -391,6 +391,106 @@ response 例:
 }
 ```
 
+### 11.5 Endpoint Catalog
+
+frontend が利用する API の概観を以下に定義する。実装着手後は OpenAPI が物理的正本となるが、論理的な責務分割は本節を正本とする。
+
+#### 11.5.1 Auth
+
+| Method | Path | Responsibility |
+|---|---|---|
+| POST | `/auth/session` | Auth.js callback、session 確立 |
+| GET | `/auth/me` | 自分の認証情報取得 |
+| POST | `/auth/logout` | session 破棄 |
+
+#### 11.5.2 Projects
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects` | プロジェクト一覧 | `projects.list` |
+| POST | `/projects` | プロジェクト新規作成 | — |
+| GET | `/projects/{project_id}` | プロジェクトサマリ | `projects.summary` |
+| PATCH | `/projects/{project_id}` | プロジェクト更新 | — |
+| DELETE | `/projects/{project_id}` | プロジェクト archive | — |
+
+#### 11.5.3 Workspace Status
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects/{project_id}/status` | 現フェーズ・active task・pending review | `workspace.status` |
+| GET | `/projects/{project_id}/governance` | risk / readiness / override / consult サマリ | governance projection |
+| GET | `/projects/{project_id}/memory` | working memory + focus | memory projection |
+
+#### 11.5.4 Conversation
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects/{project_id}/conversation` | message thread 取得 | `workspace.conversation` |
+| POST | `/projects/{project_id}/conversation` | ユーザーメッセージ送信 | — |
+| GET | `/projects/{project_id}/stream` | SSE: graph 進行イベント配信 | — |
+
+#### 11.5.5 Reviews
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects/{project_id}/reviews` | pending review 一覧 | `reviews.pending` |
+| GET | `/reviews/{review_id}` | review 詳細 | review detail projection |
+| POST | `/reviews/{review_id}/respond` | review への応答 | `reviews.response_example` |
+
+#### 11.5.6 Artifacts
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects/{project_id}/artifacts` | artifact 一覧 | `artifacts.list` |
+| GET | `/artifacts/{artifact_id}` | artifact summary | artifact projection |
+| GET | `/artifacts/{artifact_id}/body` | artifact 本体 lazy load | — |
+| GET | `/artifacts/{artifact_id}/lineage` | upstream / downstream | — |
+
+#### 11.5.7 Timeline and Deliverables
+
+| Method | Path | Responsibility | Mock source |
+|---|---|---|---|
+| GET | `/projects/{project_id}/timeline` | event log | timeline events |
+| GET | `/projects/{project_id}/deliverables` | final outputs 一覧 | deliverables projection |
+| POST | `/projects/{project_id}/deliverables/{output_id}/signoff` | サインオフ | — |
+
+#### 11.5.8 Admin
+
+| Method | Path | Responsibility |
+|---|---|---|
+| GET | `/admin/tenants` | テナント一覧(super admin) |
+| POST | `/admin/tenants` | テナント作成 |
+| PATCH | `/admin/tenants/{tenant_id}` | テナント設定更新(LLM provider 等) |
+| GET | `/admin/tenants/{tenant_id}/usage` | usage / cost サマリ |
+
+### 11.6 HTTP Contract Conventions
+
+- 全 endpoint は `Authorization: Bearer <jwt>` を要求する(`/auth/*` を除く)
+- JWT は Auth.js から発行され、tenant 解決は JWT claim の `tenant_id` を backend dependency で検証する
+- list 系 endpoint は `?cursor=<opaque>&limit=<int, default=50, max=200>` を受ける
+- list response は `{ "items": [...], "next_cursor": "<opaque or null>" }` を共通形とする
+- v1 prefix は MVP では必須としないが、互換性破壊時に `/v2/*` を追加できる構成にする
+
+### 11.7 Error Response Contract
+
+```json
+{
+  "ok": false,
+  "error_type": "validation_error",
+  "message": "Active user definition is missing exclusion criteria",
+  "trace_id": "0123abc..."
+}
+```
+
+`error_type` は少なくとも以下を持つ。
+
+- `validation_error`
+- `auth_error`
+- `not_found`
+- `policy_violation`
+- `tool_error`
+- `internal`
+
 ## 12. Real-Time and Refresh Model
 
 ### 12.1 Update Strategy
@@ -413,6 +513,38 @@ response 例:
 - task completed
 - artifact generated
 - deliverable ready
+
+### 12.2.1 SSE Event Schema Examples
+
+`/projects/{project_id}/stream` は EventSource API で購読し、LangGraph の `astream_events` を正規化して配信する。
+
+```text
+event: message
+data: {"type":"agent_started","agent_name":"sql_specialist","task_id":"task_034"}
+
+event: message
+data: {"type":"tool_call_started","tool_name":"validate_sql","task_id":"task_034"}
+
+event: message
+data: {"type":"artifact_created","artifact_id":"artifact_017","artifact_type":"execution_plan"}
+
+event: message
+data: {"type":"plan_decision","decision":"approve","decision_actor":"supervisor","task_id":"task_034"}
+
+event: message
+data: {"type":"review_requested","review_id":"review_011"}
+
+event: message
+data: {"type":"phase_changed","from_phase":"data_understanding","to_phase":"analytical_execution"}
+
+event: message
+data: {"type":"task_completed","task_id":"task_034"}
+
+event: message
+data: {"type":"deliverable_ready","output_id":"output_001"}
+```
+
+正規化 Literal 集合は backend schema と codegen で同期する。
 
 ### 12.3 Notification Policy
 

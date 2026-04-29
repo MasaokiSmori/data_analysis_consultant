@@ -65,6 +65,27 @@ data_analysis_consultant/
 - `backend/memory/working_memory.py`
 - `backend/memory/episodic_memory.py`
 
+### 3.2.1 State Manager Service
+
+責務:
+
+- state 正本への read-path
+- deterministic projection / filter / field selection
+- summary view 生成
+- working memory projection 生成
+- summary cache
+- caller identity に基づく view / field access 判定
+
+配置例:
+
+- `backend/services/state_manager.py`
+
+原則:
+
+- State Manager 本体は graph node ではなく service として実装する
+- graph からは `state_manager_refresh_node` などの利用 node を通じて呼ぶ
+- `query_state_view` も同じ service を叩く
+
 ### 3.3 Policy Layer
 
 責務:
@@ -191,35 +212,102 @@ data_analysis_consultant/
 - `frontend/lib/api-client.ts`
 - `frontend/lib/contracts.ts`
 
-## 5. Key Runtime Boundaries
+## 5. Contract Generation Design
 
-### 5.1 State Manager Boundary
+backend と frontend の型契約は、手書き二重管理ではなく生成パイプラインで同期する。
+
+### 5.1 Source of Truth
+
+- backend の API request / response schema は `backend/schemas/*.py` の Pydantic を正本とする
+- frontend は generated な `frontend/lib/contracts.ts` のみを消費し、手書き型を持たない
+- SSE event は HTTP OpenAPI と別経路で `backend/schemas/events.py` を正本とする
+
+### 5.2 Generation Pipeline
+
+```text
+backend/schemas/*.py            (Pydantic, source of truth)
+   ↓ FastAPI が自動生成
+backend OpenAPI document        (/openapi.json)
+   ↓ openapi-typescript-codegen
+frontend/lib/contracts.ts       (TypeScript contracts)
+   ↓ import
+frontend feature modules
+```
+
+SSE event は別パイプラインとする。
+
+```text
+backend/schemas/events.py
+   ↓ export_event_schema.py
+event JSON Schema
+   ↓ json-schema-to-typescript
+frontend/lib/events.ts
+```
+
+### 5.3 Backend Contract Rules
+
+- 全 API endpoint の request / response は Pydantic モデルで定義する
+- 主要 field には `Field(description=...)` を付ける
+- Literal / Enum は top-level に集約する
+- response model は `response_model=` を明示し、暗黙的 dict を避ける
+- tool I/O は `backend/schemas/tools.py` に定義し、frontend に見せる projection は `backend/schemas/api.py` に別定義する
+
+### 5.4 Frontend Contract Rules
+
+- `frontend/lib/contracts.ts` は generated file とし、手動編集禁止
+- backend schema 変更後の PR で必ず再生成する
+- generated diff は source diff と同じ PR でレビューする
+- React Query や feature module は generated 型を直接使う
+
+### 5.5 Generated File Policy
+
+- MVP では generated file を commit に含める
+- 変更が必要なら generated file ではなく backend schema を修正する
+- OpenAPI version は app version と同期する
+- 型 rename は破壊的変更候補として扱い、versioning 判断を行う
+
+### 5.6 Developer Flow
+
+backend の API 変更時:
+
+1. `backend/schemas/*.py` を編集する
+2. schema unit test を通す
+3. `make codegen` で OpenAPI 出力と TS 再生成を行う
+4. frontend 側の型エラーを解消する
+5. backend / frontend / generated diff を一つの PR に含める
+
+このフロー違反、特に generated TypeScript の手編集はレビューで reject する。
+
+## 6. Key Runtime Boundaries
+
+### 6.1 State Manager Boundary
 
 - State Manager は recommendation を返さない
 - typed query のみ受ける
 - caller identity は runtime から inject される
+- State Manager 本体は service であり、graph node はその利用者である
 
-### 5.2 Supervisor Boundary
+### 6.2 Supervisor Boundary
 
 - 最終裁定者
 - policy tool の結果を受けて判断する
 - unconditional override はできない
 
-### 5.3 QA Boundary
+### 6.3 QA Boundary
 
 - QA は stage 単位で実行する
 - stage 間の進行は gate で制御する
 - draft と final を混同しない
 
-### 5.4 Frontend Boundary
+### 6.4 Frontend Boundary
 
 - backend 生 state は持たない
 - projection を表示する
 - masked / unavailable を補完しない
 
-## 6. Data Flow
+## 7. Data Flow
 
-### 6.1 Execution Path
+### 7.1 Execution Path
 
 1. API request
 2. service layer
@@ -228,11 +316,11 @@ data_analysis_consultant/
 5. execution tool
 6. artifact store
 7. state update
-8. summary refresh
+8. summary refresh via State Manager service
 9. projection API
 10. frontend render
 
-### 6.2 Review Path
+### 7.2 Review Path
 
 1. backend creates `UserReviewRequest`
 2. review API exposes projection
@@ -241,9 +329,9 @@ data_analysis_consultant/
 5. backend records `UserInteractionRecord`
 6. supervisor replans if needed
 
-## 7. Implementation Notes
+## 8. Implementation Notes
 
-### 7.1 What Should Be Pure Functions
+### 8.1 What Should Be Pure Functions
 
 - risk classification
 - phase gate evaluation
@@ -251,7 +339,7 @@ data_analysis_consultant/
 - QA gate evaluation
 - access scope checks
 
-### 7.2 What Should Persist
+### 8.2 What Should Persist
 
 - GraphState
 - artifacts
@@ -261,7 +349,7 @@ data_analysis_consultant/
 - episodic memory
 - user reviews
 
-### 7.3 What Should Stay Replaceable
+### 8.3 What Should Stay Replaceable
 
 - LLM provider
 - SQL runtime
@@ -269,7 +357,7 @@ data_analysis_consultant/
 - policy store backend
 - artifact store backend
 
-## 8. Non-Goals for MVP
+## 9. Non-Goals for MVP
 
 - multi-tenant collaboration UI
 - rich annotation on charts

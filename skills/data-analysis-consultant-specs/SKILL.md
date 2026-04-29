@@ -28,6 +28,7 @@ Use this skill when editing or reviewing this project's specifications or mock c
    - `draft` / `internal` / `QA-approved` / `user-reviewed` / `final-delivery`
    - provisional mode
    - governance summaries and access masking
+   - `State Manager service` vs `state_manager_refresh_node`
 5. Prefer updating the spec and the mock in the same change when a user-facing contract changes.
 
 ## Guardrails
@@ -36,6 +37,7 @@ Use this skill when editing or reviewing this project's specifications or mock c
 - Do not collapse `provisional` outputs into final outputs in mocks or UI specs.
 - Do not describe Supervisor override as unconditional; use the justified override model.
 - Do not let State Manager become a recommendation engine; keep it typed and deterministic.
+- Do not model State Manager itself as a thinking graph node; treat it as a service and let graph nodes call it.
 
 ## Quick Checks
 
