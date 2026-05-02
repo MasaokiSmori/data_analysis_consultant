@@ -123,6 +123,32 @@ UI は大きく以下の 5 領域で構成する。
 
 ## 7. Screen Specifications
 
+### 7.0 Shared Workspace Shell
+
+すべての主要画面は、以下の 3 カラム shell を基本とする。
+
+```text
++----------------------------------------------------------------------------------+
+| Top Bar: Project name | phase badge | pending review count | user menu          |
++------------------------------+--------------------------------+------------------+
+| Left Nav                     | Main Workspace                 | Right Context    |
+| - Overview                   | - active screen content        | - current phase  |
+| - Conversation               | - banners / tabs / details     | - working memory |
+| - Reviews                    | - primary actions              | - focus points   |
+| - Artifacts                  |                                | - blocked items  |
+| - Timeline                   |                                | - access notice  |
+| - Deliverables               |                                |                  |
++------------------------------+--------------------------------+------------------+
+| Bottom Toast / Notification rail                                                 |
++----------------------------------------------------------------------------------+
+```
+
+原則:
+
+- 左で移動、中央で作業、右で文脈確認
+- pending review は shell レベルで常に見える
+- mobile では右カラムを bottom sheet に折りたたむ
+
 ### 7.1 Project Home
 
 表示要素:
@@ -145,17 +171,14 @@ rough wireframe:
 
 ```text
 +----------------------------------------------------------------------------------+
-| Top Bar: Project name | phase badge | pending review count | user menu          |
-+------------------------------+--------------------------------+------------------+
-| Left Nav                     | Main Workspace                 | Right Context    |
-| - Overview                   | - conversation OR artifact     | - current phase  |
-| - Conversation               | - inline review banners        | - working memory |
-| - Reviews                    | - selected artifact body       | - focus points   |
-| - Artifacts                  | - action footer / compose box  | - blocked items  |
-| - Timeline                   |                                | - access notice  |
-| - Deliverables               |                                |                  |
-+------------------------------+--------------------------------+------------------+
-| Bottom Toast / Notification rail                                                 |
+| Home Header: title | phase | progress | pending reviews | latest deliverable   |
++--------------------------------------+-------------------------------+-----------+
+| Current Focus Card                   | Recent Activity Feed          | Right     |
+| - current phase objective            | - phase changed              | Context   |
+| - top 3 focus points                 | - artifact generated         | summary   |
+| - blocked items                      | - review requested           | column    |
++--------------------------------------+-------------------------------+-----------+
+| Quick Links: Resume Conversation | Open Reviews | Open Artifact | View Timeline     |
 +----------------------------------------------------------------------------------+
 ```
 
@@ -180,6 +203,23 @@ rough wireframe:
 - backend の review request をチャット内でも通知する
 - 単なるログではなく、artifact / review / decision への深掘り導線を持つ
 
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Conversation Header: phase | active task count | pending review badge             |
++---------------------------------------------+------------------------------------+
+| Message Thread                               | Right Context                      |
+| - user messages                              | - current task summary             |
+| - agent clarification prompts                | - linked artifacts                 |
+| - review request system cards                | - open questions                   |
+| - inline artifact / decision links           | - working memory                   |
+|                                              |                                    |
++---------------------------------------------+------------------------------------+
+| Compose Box: message input | attach context | send                               |
++----------------------------------------------------------------------------------+
+```
+
 ### 7.3 Artifact Workspace
 
 表示要素:
@@ -203,6 +243,22 @@ artifact renderer は少なくとも以下をサポートする。
 - report outline
 - JSON / schema view
 
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Artifact Header: title | type | phase | QA status | quality stage | provisional  |
++----------------------------------------+-----------------------------------------+
+| Summary Pane                           | Provenance / Metadata                   |
+| - summary                              | - producer / task / updated_at          |
+| - business meaning                     | - upstream / downstream                 |
+| - access notice                        | - data snapshot / tags                  |
++----------------------------------------+-----------------------------------------+
+| Rendered Body                                                                    |
+| - document / table / chart / issue list / report outline / JSON                 |
++----------------------------------------------------------------------------------+
+```
+
 ### 7.4 Review Center
 
 表示要素:
@@ -222,6 +278,22 @@ artifact renderer は少なくとも以下をサポートする。
 - `clarify`
 - `pause`
 
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Review Header: pending count | blocking scope | urgency                           |
++------------------------------+--------------------------------+------------------+
+| Pending Review List          | Selected Review Detail         | Related Artifacts|
+| - review title               | - prompt to user               | - artifact A     |
+| - phase                      | - impact summary               | - artifact B     |
+| - requested by               | - allowed actions              | - QA status      |
+| - due / waiting time         | - comments box                 | - provenance     |
++------------------------------+--------------------------------+------------------+
+| Action Bar: approve | request_changes | clarify | pause                          |
++----------------------------------------------------------------------------------+
+```
+
 ### 7.5 Timeline / Activity Screen
 
 表示要素:
@@ -240,6 +312,21 @@ artifact renderer は少なくとも以下をサポートする。
 
 - 「何がいつ起きたか」を後から追えるようにする
 
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Timeline Header: filters | phase | actor | event type                            |
++---------------------------------------------+------------------------------------+
+| Event Stream                                 | Event Detail / Evidence            |
+| - phase changed                              | - full event summary               |
+| - plan approved                              | - linked decision / artifact       |
+| - QA rejected                                | - policy version                   |
+| - advisor consulted                          | - override reason                  |
+| - user review responded                      | - timestamps / trace ids           |
++---------------------------------------------+------------------------------------+
+```
+
 ### 7.6 Deliverables Screen
 
 表示要素:
@@ -249,6 +336,23 @@ artifact renderer は少なくとも以下をサポートする。
 - supporting artifacts
 - sign-off status
 - provisional outputs separated from final outputs
+
+rough wireframe:
+
+```text
++----------------------------------------------------------------------------------+
+| Deliverables Header: project | sign-off status | final delivery readiness          |
++----------------------------------------+-----------------------------------------+
+| Executive Summary                        | Final Outputs                         |
+| - key findings                           | - report deck                         |
+| - top recommendations                    | - appendix package                    |
+| - major caveats                          | - export / sign-off actions           |
++----------------------------------------+-----------------------------------------+
+| Supporting Evidence                                                              |
+| - supporting artifacts list                                                    |
+| - provisional outputs listed separately and visually muted                      |
++----------------------------------------------------------------------------------+
+```
 
 ## 8. Human-in-the-Loop Interaction Design
 
