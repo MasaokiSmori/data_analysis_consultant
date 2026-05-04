@@ -1533,7 +1533,7 @@ state に全文保持しないもの:
 
 以下は実装用 Pydantic モデルの圧縮版設計例である。フィールドは全 agent の input / output、tool execution、user review、phase gate、plan approval、summary cache を追跡できる粒度を保持する。
 
-実装時には、主要フィールドに `Field(description=...)` を付与することを推奨する。これにより以下の利点がある。
+この節の class 定義は可読性のため `Field(description=...)` を省略した圧縮表現である。実装時には、**public field すべてに `Field(description=...)` を付与することを必須とする。** これにより以下の利点がある。
 
 - JSON Schema / OpenAPI 生成時に意味が失われにくい
 - tool I/O と state schema の意図を実装者が誤解しにくい
@@ -1541,7 +1541,16 @@ state に全文保持しないもの:
 - LLM に構造化出力を要求する際の補助コンテキストとしても使いやすい
 
 特に `TaskRecord`, `ArtifactRef`, `SupervisorDecision`, `QAReviewRecord`, `UserReviewRequest`, `ToolCallRecord` の主要フィールドには description を付ける前提とする。
-`WorkingMemory` と `AgentEpisodicMemoryEntry` の主要フィールドにも description を付け、memory の意味と寿命が分かるようにする。
+`WorkingMemory`, `AgentEpisodicMemoryEntry`, `HumanReviewReasoningTrace`, `GraphState` の主要フィールドにも description を付け、memory や trace の意味と寿命が分かるようにする。
+
+description の記述ルール:
+
+- field が何を表すかを 1 文で明示する
+- enum / literal 系は「どういう判定でその値になるか」を添える
+- ID 系は「どのスコープで一意か」を添える
+- URI / artifact / memory 系は「正本がどこにあるか」を添える
+- bool 系は `True` の意味を必ず書く
+- list / dict 系は「何の集合か」「bounded か」を必要に応じて書く
 
 ```python
 from __future__ import annotations
@@ -2033,6 +2042,85 @@ class GraphState(BaseModel):
     summary_cache_index: list[SummaryCacheEntry] = Field(default_factory=list)
     error_log: list[str] = Field(default_factory=list)
     checkpoints: list[str] = Field(default_factory=list)
+```
+
+実装時の description 例:
+
+```python
+class TeamMember(BaseModel):
+    agent_name: AgentName = Field(
+        description="Stable agent identifier used across dispatch, audit, and access control"
+    )
+    role_summary: str = Field(
+        description="Short human-readable summary of the agent's responsibility in the orchestration"
+    )
+    allowed_state_views: list[StateViewName] = Field(
+        default_factory=list,
+        description="Registered read-only state views that this agent is allowed to request from the State Manager"
+    )
+
+
+class WorkingMemory(BaseModel):
+    phase_objective: str = Field(
+        description="Current phase objective that specialists should optimize for during this stage"
+    )
+    focus_points: list[str] = Field(
+        default_factory=list,
+        description="Top items that deserve immediate attention in the current phase"
+    )
+    provisional_assumptions: list[str] = Field(
+        default_factory=list,
+        description="Assumptions currently accepted for provisional progress and requiring later confirmation"
+    )
+
+
+class TaskRecord(BaseModel):
+    task_id: str = Field(description="Stable task identifier unique within the project")
+    plan_status: PlanStatus = Field(
+        default="not_required",
+        description="Current lifecycle status of the execution plan associated with this task"
+    )
+    risk_level: RiskLevel = Field(
+        default="medium",
+        description="Latest risk tier assigned to the task based on the most recent execution plan review"
+    )
+    provisional_allowed: bool = Field(
+        default=False,
+        description="Whether this task is allowed to proceed under degraded-mode provisional execution"
+    )
+
+
+class ArtifactRef(BaseModel):
+    artifact_id: str = Field(description="Immutable artifact identifier unique within the project")
+    storage_uri: str = Field(description="Canonical storage location of the artifact body outside GraphState")
+    quality_stage: QualityStage = Field(
+        default="draft",
+        description="Current lifecycle stage that determines how widely this artifact may be used or shown"
+    )
+
+
+class HumanReviewReasoningTrace(BaseModel):
+    trace_id: str = Field(description="Stable identifier for a human-review-only reasoning trace record")
+    input_summary: str = Field(description="Redacted summary of the input context seen by the node or agent")
+    decision_summary: str = Field(description="Short explanation of the main decision or conclusion reached")
+    redaction_applied: bool = Field(
+        default=True,
+        description="True when sensitive content has been redacted before persistence for human review"
+    )
+
+
+class GraphState(BaseModel):
+    state_version: int = Field(
+        description="Monotonically increasing state version used for cache invalidation and audit ordering"
+    )
+    working_memory: WorkingMemory = Field(
+        default_factory=WorkingMemory,
+        description="Shared short-to-medium-term execution memory for the current phase"
+    )
+    agent_episodic_memories: dict[AgentName, list[AgentEpisodicMemoryEntry]] = Field(
+        default_factory=dict,
+        description="Per-agent bounded short-term memory entries; not a canonical long-term memory store"
+    )
 ```
 
 この state により、少なくとも以下を追跡できる。
